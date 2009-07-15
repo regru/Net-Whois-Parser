@@ -104,8 +104,6 @@ sub _post_parse {
         
         delete $data->{$key}, next unless $value;
         
-        @$value = _make_unique(@$value) if $#$value > 0;
-
         # Изменение ключа
         if ( exists $name_conv{$key} ) {
             delete $data->{$key};
@@ -116,6 +114,8 @@ sub _post_parse {
                 if $data->{$key};
 
         }
+        
+        @$value = _make_unique(@$value) if $#$value > 0;
 
         # форматирование полей и запись в хеш
         if ( $key eq 'nameservers' ) {
@@ -140,6 +140,7 @@ sub _post_parse {
             $data->{$key} = $#$value > 0 ? $value : $value->[0];
             
         } 
+        
     }
     $data;
 }
@@ -257,9 +258,10 @@ sub _make_unique {
 sub _default_parser {
     my ( $raw ) = @_;
     my %data;    
-
+    
     # получаем данные в виде ключ => значение
     for my $line ( split /\n/, $raw ) {
+
         chomp $line;
         $line =~ s/^\s+//;
         $line =~ s/\s+$//;
@@ -275,6 +277,7 @@ sub _default_parser {
 
     # поиск вообще всех emails
     my @emails = $raw =~ /($RFC822PAT)/gso;
+    @emails = map { $_ =~ s/\s+//g; ($_) } @emails;
     $data{emails} = exists $data{emails} ? 
         [ @{$data{emails}}, @emails ] : [@emails];
    
