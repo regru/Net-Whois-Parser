@@ -1,0 +1,7 @@
+Changes
+lib/Net/Whois/Parser.pm
+Makefile.PL
+MANIFEST
+META.yml			Module meta-data (added by MakeMaker)
+README
+t/000-base.t
