@@ -41,12 +41,15 @@ sub _fetch_whois {
     my @res = eval { 
         Net::Whois::Raw::whois( 
             $args{domain}, 
-            $args{server}, 
+            $args{server} || undef, 
             $args{which_whois} || 'QRY_ALL'
         )
     };
 
-    ref $res[0] ? $res[0] : [ { text => $res[0], srv => $res[1] } ];
+    my $res = ref $res[0] ? $res[0] : [ { text => $res[0], srv => $res[1] } ];
+    @$res = grep { $_->{text} } @$res;
+
+    return scalar @$res ? $res : undef;
 }
 
 sub parse_whois {
@@ -60,8 +63,9 @@ sub parse_whois {
             'DEFAULT';
         
         my $whois = ref $args{raw} ? $args{raw} : [ { text => $args{raw}, srv => $server } ];
+        
 
-        return _process_parse($whois);
+        return $whois ? _process_parse($whois) : undef;
 
     }
     elsif ( $args{domain} ) {
