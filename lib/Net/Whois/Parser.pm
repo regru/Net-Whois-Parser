@@ -131,9 +131,10 @@ sub _post_parse {
                 $domain =~ s/\.$//;
                 $domain = lc $domain;
 
-                push @nss, $domain && $ip ? 
-                    { domain => $domain, ip => $ip } : 
-                        { domain => $domain};
+                push @nss, { 
+                    domain => $domain, 
+                    ( $ip ? (ip => $ip) : () )
+                }; 
             }
             $data->{$key} = \@nss;
         }
@@ -141,12 +142,17 @@ sub _post_parse {
             $data->{$key} = $value;
         }
         else {
-            $data->{$key} = $#$value > 0 ? $value : $value->[0];
+            $data->{$key} = scalar @$value > 1 ? $value : $value->[0];
             
         } 
         
     }
     $data;
+}
+
+sub _make_unique {
+    my %vals;
+    grep { not $vals{$_} ++ } @_;
 }
 
 ## PARSERS ##
@@ -254,10 +260,6 @@ EOF
 
 $RFC822PAT =~ s/\n//g;
 
-sub _make_unique {
-    my %vals;
-    grep { not $vals{$_} ++ } @_;
-}
 
 sub _default_parser {
     my ( $raw ) = @_;
