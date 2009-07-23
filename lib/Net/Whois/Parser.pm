@@ -360,6 +360,8 @@ C<'server'> -
 C<'which_whois'> - 
     option for Net::Whois::Raw::whois. Default value is QRY_ALL
 
+=back
+
 =head1 CHANGES
 
 See file "Changes" in the distribution
