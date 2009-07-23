@@ -2,7 +2,7 @@
 
 use strict;
 
-use Test::More qw(no_plan);
+use Test::More;
 
 use lib qw( lib ../lib );
 
@@ -10,9 +10,9 @@ use Net::Whois::Raw;
 use Net::Whois::Parser;
 $Net::Whois::Parser::DEBUG = 2;
 
-use Data::Dumper;
-
 my $domain = $ARGV[0] || 'reg.ru';
+
+plan tests => $domain eq 'reg.ru' ? 6 : 3;
 
 my ( $raw, $server ) = whois($domain);
 

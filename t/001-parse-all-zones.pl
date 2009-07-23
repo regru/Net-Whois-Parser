@@ -2,12 +2,14 @@
 
 use strict;
 
-use Test::More qw(no_plan);
+use Getopt::Long;
+use Test::More;
 
 use lib qw( lib ../lib );
 
 use Net::Whois::Parser;
-use Data::Dumper;
+
+plan skip_all => 'Very long test!';
 
 my $domain = $ARGV[0] || 'reg.ru';
 
@@ -25,7 +27,4 @@ for my $zone ( keys %Net::Whois::Raw::Data::servers ) {
     ok exists $d_info->{nameservers}, "\t\t$zone\tnameservers";
     ok exists $d_info->{emails}, "\t\t$zone\temails";
 
-    #warn Dumper($domain_info->whois_fields);
-
 }
-

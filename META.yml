@@ -9,6 +9,7 @@ distribution_type:  module
 configure_requires:
     ExtUtils::MakeMaker:  0
 requires:
+    Test::More:           0
     Net::Whois::Raw:      0
 no_index:
     directory:

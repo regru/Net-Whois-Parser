@@ -5,7 +5,6 @@ use warnings;
 use Data::Dumper;
 
 use Net::Whois::Raw;
-use Net::Whois::Raw::Common;
 
 our $VERSION = '0.01';
 
@@ -66,7 +65,7 @@ sub parse_whois {
         my $whois = ref $args{raw} ? $args{raw} : [ { text => $args{raw}, srv => $server } ];
         
 
-        return $whois ? _process_parse($whois) : undef;
+        return _process_parse($whois);
 
     }
     elsif ( $args{domain} ) {
