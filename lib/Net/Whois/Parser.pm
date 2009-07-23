@@ -366,7 +366,7 @@ See file "Changes" in the distribution
 
 =head1 AUTHOR
 
-Ivan Sokolov, C<< <ivsokolov@gmail.com> >>
+Ivan Sokolov, C<< <ivsokolov@cpan.org> >>
 
 =head1 COPYRIGHT & LICENSE
 
