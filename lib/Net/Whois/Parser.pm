@@ -13,10 +13,11 @@ our @EXPORT = qw( parse_whois );
 
 our $DEBUG = 0; 
 
-my %parsers = ( 
+our %PARSERS = ( 
     'DEFAULT' => \&_default_parser,
 );
-my %name_conv = (
+
+our %FIELD_NAME_CONV = (
     'e-mail'      => 'emails',
     'nserver'     => 'nameservers',        
     'Name Server' => 'nameservers',        
@@ -34,7 +35,7 @@ sub import {
     *{"$callpkg\::$_"} = \&{"$mypkg\::$_"} foreach ((@EXPORT, @_));
 }
 
-
+# fetches whois text
 sub _fetch_whois {
     my %args = @_;
 	
@@ -77,18 +78,13 @@ sub parse_whois {
     undef;
 }
 
-sub add_parser {
-    my ($self, $server, $code_ref ) = @_;
-    $parsers{$server} = $code_ref;
-}
-
 sub _process_parse {
     my ( $whois ) = @_;
 
     my %data = ();
     for my $ans ( @$whois ) {
 
-        my $parser = $parsers{$ans->{srv}} || $parsers{DEFAULT};
+        my $parser = $PARSERS{$ans->{srv}} || $PARSERS{DEFAULT};
 
         %data = (
             %data,
@@ -109,10 +105,10 @@ sub _post_parse {
         delete $data->{$key}, next unless $value;
         
         # Изменение ключа
-        if ( exists $name_conv{$key} ) {
+        if ( exists $FIELD_NAME_CONV{$key} ) {
             delete $data->{$key};
 
-            $key =  $name_conv{$key};
+            $key =  $FIELD_NAME_CONV{$key};
         
             $value = [ @$value, @{$data->{$key}} ] 
                 if $data->{$key};
@@ -299,72 +295,79 @@ Net::Whois::Parser - module for parsing whois information
 
 =head1 SYNOPSIS
 
-This module provides Whois data parsing.
-You can add your own parsers for any whois server.
-
-
-	use Net::Whois::Parser qw(add_parser);
-        
-        my $info = parse_whois( domain => $domain );
-        my $info = parse_whois( raw => $whois_raw_text, domain => $domain  );
-        my $info = parse_whois( raw => $whois_raw_text, server => $whois_server  );
-
-        my info = {
+    use Net::Whois::Parser;
+    
+    my $info = parse_whois( domain => $domain );
+    my $info = parse_whois( raw => $whois_raw_text, domain => $domain  );
+    my $info = parse_whois( raw => $whois_raw_text, server => $whois_server  );
+    
+    $info = {
+        nameservers => [
+            { domain => 'ns.example.com', ip => '123.123.123.123' },
+            { domain => 'ns.example.com' },
+        ],
+        emails => [ 'admin@example.com' ],
+        domain => 'example.com',
+        somefield1 => 'value',
+        somefield2 => [ 'value', 'value2' ],
+        ...
+    };
+    
+    # Your own parsers
+    
+    sub my_parser {
+        my ( $text ) = @_;
+        return {
             nameservers => [
                 { domain => 'ns.example.com', ip => '123.123.123.123' },
                 { domain => 'ns.example.com' },
             ],
             emails => [ 'admin@example.com' ],
-            domain => 'example.com',
-            somefield1 => 'value',
-            somefield2 => 'value',
-            somefield3 => 'value',
-            ...
-        };
+            somefield => 'value',
+            somefield2 => [ 'value', 'value2' ],
+        };                    
+    }
+    
+    $Net::Whois::Parser::PARSERS{'whois.example.com'} = \&my_parser;
+    $Net::Whois::Parser::PARSERS{'DEFAULT'}           = \&my_default_parser;
+    
+    
+    # If you want to convert some field name to another:
+        
+    $Net::Whois::Parser::FIELD_NAME_CONV{'Domain name'} = 'domain';
+    
+=head1 DESCRIPTION
 
-        sub my_parser {
-            my ( $text ) = @_;
-            return {
-                nameservers => [
-                    { domain => 'ns.example.com', ip => '123.123.123.123' },
-                    { domain => 'ns.example.com' },
-                ],
-                emails => [ 'admin@example.com' ],
-            };                    
-        }
+Net::Whois::Parser module provides Whois data parsing.
+You can add your own parsers for any whois server.
 
-        add_parser( $whois_server, \&my_parser );
+=head1 FUNCTIONS
 
-=head1 COMMON WHOIS FIELDS
+=over 3
 
-        %common_fields = (
-            emails => ['email@domain.com],
-            nservers => [
-                { domain => 'ns1.domain.com', ip => '123.123.123' },
-                { domain => 'ns2.domain.com' },
-            ],
-            
-        );
+=item parse_whois(%args)
 
-=head1 METHODS
+Returns hash of whois data. Arguments:
+ 
+C<'domain'> - 
+    domain
 
-=head2 parse_whois
+C<'raw'> -
+    raw whois text
+ 
+C<'server'> - 
+   whois server 
 
-=cut
+C<'which_whois'> - 
+    option for Net::Whois::Raw::whois. Default value is QRY_ALL
 
-=head2 add_parser
+=head1 CHANGES
 
-=cut
+See file "Changes" in the distribution
 
 =head1 AUTHOR
 
 Ivan Sokolov, C<< <ivsokolov@gmail.com> >>
-
-=head1 BUGS
-
-=head1 SUPPORT
-
-=head1 ACKNOWLEDGEMENTS
 
 =head1 COPYRIGHT & LICENSE
 
