@@ -9,3 +9,6 @@ t/000-base.t
 t/001-parse-all-zones.pl
 t/pod.t
 t/pod-coverage.t
+examples/info.pl
+examples/key_count.pl
+examples/keys_by_whois.pl

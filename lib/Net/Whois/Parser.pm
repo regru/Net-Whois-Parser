@@ -1,12 +1,11 @@
 package Net::Whois::Parser;
 
 use strict;
-use warnings;
-use Data::Dumper;
 
+use utf8;
 use Net::Whois::Raw;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 our @EXPORT = qw( parse_whois );
 
@@ -17,10 +16,31 @@ our %PARSERS = (
 );
 
 our %FIELD_NAME_CONV = (
-    'e-mail'      => 'emails',
-    'nserver'     => 'nameservers',        
-    'Name Server' => 'nameservers',        
-    'Domain name' => 'domain',
+
+    # nameservers
+    nserver       => 'nameservers',        
+    name_server   => 'nameservers',        
+    name_serever  => 'nameservers',
+    name_server   => 'nameservers',
+    nameserver    => 'nameservers',
+
+    # domain
+    domain_name   => 'domain',
+    domainname    => 'domain',
+    
+    # creation_date
+    created       => 'creation_date',
+    created_on    => 'creation_date',
+    creation_date => 'creation_date',
+
+    #expiration_date
+    expire        => 'expiration_date',
+    expire_date   => 'expiration_date',
+    expires       => 'expiration_date',
+    expires_at    => 'expiration_date',
+    expires_on    => 'expiration_date',
+    expiry_date   => 'expiration_date',
+
 );
 
 # From Net::Whois::Raw
@@ -37,7 +57,9 @@ sub import {
 # fetches whois text
 sub _fetch_whois {
     my %args = @_;
-	
+
+    local $Net::Whois::Raw::CHECK_FAIL = 1;	
+
     my @res = eval { 
         Net::Whois::Raw::whois( 
             $args{domain}, 
@@ -45,6 +67,7 @@ sub _fetch_whois {
             $args{which_whois} || 'QRY_ALL'
         )
     };
+    return undef if $@;
 
     my $res = ref $res[0] ? $res[0] : [ { text => $res[0], srv => $res[1] } ];
     @$res = grep { $_->{text} } @$res;
@@ -53,6 +76,7 @@ sub _fetch_whois {
 }
 
 sub parse_whois {
+    #TODO warn: Odd number of elements in hash assignment
     my %args = @_;
 
     if ( $args{raw} ) {
@@ -70,7 +94,8 @@ sub parse_whois {
     }
     elsif ( $args{domain} ) {
         
-        return _process_parse( _fetch_whois(%args) );
+        my $whois = _fetch_whois(%args);
+        return $whois ? _process_parse($whois) : undef;
 
     }
     
@@ -83,7 +108,9 @@ sub _process_parse {
     my %data = ();
     for my $ans ( @$whois ) {
 
-        my $parser = $PARSERS{$ans->{srv}} || $PARSERS{DEFAULT};
+        my $parser = 
+            $ans->{srv} && $PARSERS{$ans->{srv}} ? 
+                $PARSERS{$ans->{srv}} : $PARSERS{DEFAULT};
 
         %data = (
             %data,
@@ -102,7 +129,17 @@ sub _post_parse {
         my $value = $data->{$key};
         
         delete $data->{$key}, next unless $value;
-        
+
+        # переделываем ключи
+        my $tmp_key = lc $key;
+        $tmp_key =~ s/\s+|\t+|-/_/g;
+            
+        unless ( $tmp_key eq $key ) {
+            $data->{$tmp_key} = $data->{$key};
+            delete $data->{$key};
+            $key = $tmp_key;
+        }            
+       
         # Изменение ключа
         if ( exists $FIELD_NAME_CONV{$key} ) {
             delete $data->{$key};
@@ -267,8 +304,10 @@ sub _default_parser {
         $line =~ s/^\s+//;
         $line =~ s/\s+$//;
 
-        my ( $key, $value ) = $line =~ /^\s*([a-z0-9-]+):\s*(.+)\s*$/;
+        my ( $key, $value ) = $line =~ /^\s*([\d\w\s_-]+):\s*(.+)$/;
         next if  !$line || !$value;
+        $key =~ s/\s+$//;
+        $value =~ s/\s+$//;
 
         # если полей с одинаковым ключем несколько, пихаем в массив
         $data{$key} = ref $data{$key} eq 'ARRAY' ? 

@@ -9,7 +9,7 @@ my $builder = Module::Build->new(
     dist_version_from   => 'lib/Net/Whois/Parser.pm',
     build_requires => {
         'Test::More' => 0,
-	'Net::Whois::Raw' => '2.00',
+	'Net::Whois::Raw' => 2.0,
     },
     add_to_cleanup      => [ 'Net-Whois-Parser-*' ],
     create_makefile_pl => 'traditional',
