@@ -1,5 +1,5 @@
 
-0.02    2009-07-15      
+0.02    2009-07-30      
     Fixed default parser to get more data fields
     Added some field names to convert to standard names
     Fixed fetch whois data to return undef if error
