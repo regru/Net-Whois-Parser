@@ -1,4 +1,6 @@
-
+0.03    2010-01-24
+    Added support formatting fields after parsing
+    Added flag witch provide saving only last value of a field
 0.02    2009-07-30      
     Fixed default parser to get more data fields
     Added some field names to convert to standard names

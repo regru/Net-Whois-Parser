@@ -41,3 +41,15 @@ ok exists $info->{'test_1'}, 'field name with spaces';
 ok exists $info->{'test_2'}, 'field with -';
 is $info->{'test3'}, 'value:value', 'field value with :';
 
+####
+$Net::Whois::Parser::ONLY_LAST_VALUE = 1;
+
+$raw = [
+    { text => "test: error" },
+    { text => "test: ok" },
+];
+$info = parse_whois( raw => $raw );
+
+is $info->{test}, 'ok', 'only_last_value is on';
+
+
