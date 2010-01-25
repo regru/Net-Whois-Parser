@@ -136,14 +136,15 @@ sub _post_parse {
     my ( $data )  = @_;
 
     my %res = ();
+    my $count = 0;
 
     for my $hash ( @$data ) {
+
+        $count++;
     
         for my $key ( keys %$hash ) {
             next unless $hash->{$key};
 
-            #my $value = $hash->{$key};
- 
             # change keys to standard names
             my $new_key = lc $key;
             $new_key =~ s/\s+|\t+|-/_/g;
@@ -151,7 +152,10 @@ sub _post_parse {
                 $new_key =  $FIELD_NAME_CONV{$new_key};
             }
             
-            #print "$key => $new_key\n";
+            # ONLY_LAST_VALUE
+            if ( $ONLY_LAST_VALUE && $count == scalar @$data ) {
+                delete $res{$new_key} if exists $hash->{$key};
+            }
 
             # add values to result hash           
             if ( exists $res{$new_key} ) { 
@@ -161,22 +165,14 @@ sub _post_parse {
                 $res{$new_key} = ref $hash->{$key} ? $hash->{$key} : [$hash->{$key}];
             }
         
-            #print join ", ", @{$res{$new_key}}, "\n";
-
         }
-        #print "\n\n";
     }
 
     # make unique and process hooks
     while ( my ( $key, $value ) = each %res ) {   
  
         if ( scalar @$value > 1 ) {
-            if ( $ONLY_LAST_VALUE ) {
-                $value = $value->[-1];
-            }
-            else {
-                @$value = _make_unique(@$value);
-            }
+            @$value = _make_unique(@$value);
         }
         else {
             $value = $value->[0];
