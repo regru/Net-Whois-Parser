@@ -11,9 +11,6 @@ use Net::Whois::Parser;
 
 plan skip_all => 'Very long test!';
 
-my $domain = $ARGV[0] || 'reg.ru';
-
-
 # Проверяем работоспособность парсера на всех зонах
 for my $zone ( keys %Net::Whois::Raw::Data::servers ) {
 

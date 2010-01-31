@@ -26,6 +26,8 @@ our %FIELD_NAME_CONV = (
     name_serever  => 'nameservers',
     name_server   => 'nameservers',
     nameserver    => 'nameservers',
+    dns1          => 'nameservers',
+    dns2          => 'nameservers',
 
     # domain
     domain_name   => 'domain',
@@ -46,9 +48,9 @@ our %FIELD_NAME_CONV = (
 
 );
 
-# You can turn this flag to save
-# only last value of fields of many whois answers
-our $ONLY_LAST_VALUE = 0;
+# You can turn this flag to get
+# all values of field in all whois answers
+our $GET_ALL_VALUES = 0;
 
 # hooks for formating values
 our %HOOKS = (
@@ -123,8 +125,6 @@ sub _process_parse {
             $ans->{srv} && $PARSERS{$ans->{srv}} ? 
                 $PARSERS{$ans->{srv}} : $PARSERS{DEFAULT};
 
-        #print "\n", $ans->{text}, "\n";
-
         push @data, $parser->($ans->{text});
     }
 
@@ -137,6 +137,7 @@ sub _post_parse {
 
     my %res = ();
     my $count = 0;
+    my %flag = ();
 
     for my $hash ( @$data ) {
 
@@ -151,10 +152,12 @@ sub _post_parse {
             if ( exists $FIELD_NAME_CONV{$new_key} ) {
                 $new_key =  $FIELD_NAME_CONV{$new_key};
             }
-            
-            # ONLY_LAST_VALUE
-            if ( $ONLY_LAST_VALUE && $count == scalar @$data ) {
-                delete $res{$new_key} if exists $hash->{$key};
+    
+            unless ( $GET_ALL_VALUES ) {
+                if ( exists $res{$new_key} && !$flag{$new_key} ) {
+                    delete $res{$new_key};
+                    $flag{$new_key} = 1;
+                }
             }
 
             # add values to result hash           
@@ -316,15 +319,9 @@ sub _default_parser {
         $key =~ s/\s+$//;
         $value =~ s/\s+$//;
 
-        if ( $ONLY_LAST_VALUE ) {
-            # save only last value of field
-            $data{$key} = [$value];
-        }
-        else {
-            # if we have more then one value for one field we push them into array
-            $data{$key} = ref $data{$key} eq 'ARRAY' ? 
-                [ @{$data{$key}}, $value ] : [ $value ];
-        }
+        # if we have more then one value for one field we push them into array
+        $data{$key} = ref $data{$key} eq 'ARRAY' ? 
+            [ @{$data{$key}}, $value ] : [ $value ];
 
     }
 
@@ -405,8 +402,16 @@ Net::Whois::Parser - module for parsing whois information
     $Net::Whois::Parser::PARSERS{'whois.example.com'} = \&my_parser;
     $Net::Whois::Parser::PARSERS{'DEFAULT'}           = \&my_default_parser;
 
-    # If you want to save only last value of field of many whois answers
+    # If you want to get all values of fields from all whois answers
     $Net::Whois::Parser::ONLY_LAST_VALUE = 1;
+        # example
+        # Net::Whois::Raw returns 2 answers
+        $raw = [ { text => 'key: value1' }, { text => 'key: value2'}];
+        $data = parse_whois(raw => $raw);
+        # If flag is off parser returns
+        # { key => 'value2' };
+        # If flag is on parser returns
+        # { key => [ 'value1', 'value2' ] };
     
     # If you want to convert some field name to another:
     $Net::Whois::Parser::FIELD_NAME_CONV{'Domain name'} = 'domain';

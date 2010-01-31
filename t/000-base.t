@@ -11,10 +11,9 @@ use Net::Whois::Parser;
 $Net::Whois::Parser::DEBUG = 2;
 
 my $domain = 'reg.ru';
-my $raw = '';
 my $info;
 
-plan tests => 10;
+plan tests => 11;
 
 my ( $raw, $server ) = whois($domain);
 
@@ -42,14 +41,15 @@ ok exists $info->{'test_2'}, 'field with -';
 is $info->{'test3'}, 'value:value', 'field value with :';
 
 ####
-$Net::Whois::Parser::ONLY_LAST_VALUE = 1;
+$Net::Whois::Parser::GET_ALL_VALUES = 1;
 
 $raw = [
-    { text => "test: error" },
-    { text => "test: ok" },
+    { text => "test: 1" },
+    { text => "tEst: 2" },
+    { text => "test: 3" },
 ];
 $info = parse_whois( raw => $raw );
 
-is $info->{test}, 'ok', 'only_last_value is on';
+is_deeply $info->{test}, [ 1, 2, 3], 'get_all_values is on';
 
 
