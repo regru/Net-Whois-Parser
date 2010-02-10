@@ -1,9 +1,7 @@
-Build.pl
+Build.PL
 Changes
 lib/Net/Whois/Parser.pm
-Makefile.PL
 MANIFEST
-META.yml			Module meta-data (added by MakeMaker)
 README
 t/000-base.t
 t/001-parse-all-zones.pl
@@ -12,3 +10,5 @@ t/pod-coverage.t
 examples/info.pl
 examples/key_count.pl
 examples/keys_by_whois.pl
+Makefile.PL
+META.yml

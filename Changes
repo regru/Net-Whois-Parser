@@ -1,3 +1,5 @@
+0.04    2010-02-10
+    Fixed some bugs
 0.03    2010-01-24
     Added support formatting fields after parsing
     Added flag witch provide getting all values of field in all whois answers

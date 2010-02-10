@@ -6,7 +6,7 @@ use utf8;
 use Net::Whois::Raw;
 use Data::Dumper;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 our @EXPORT = qw( parse_whois );
 
