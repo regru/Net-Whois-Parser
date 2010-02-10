@@ -403,7 +403,7 @@ Net::Whois::Parser - module for parsing whois information
     $Net::Whois::Parser::PARSERS{'DEFAULT'}           = \&my_default_parser;
 
     # If you want to get all values of fields from all whois answers
-    $Net::Whois::Parser::ONLY_LAST_VALUE = 1;
+    $Net::Whois::Parser::GET_ALL_VALUES = 1;
         # example
         # Net::Whois::Raw returns 2 answers
         $raw = [ { text => 'key: value1' }, { text => 'key: value2'}];
