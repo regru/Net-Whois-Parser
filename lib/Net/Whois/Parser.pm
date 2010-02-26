@@ -6,7 +6,7 @@ use utf8;
 use Net::Whois::Raw;
 use Data::Dumper;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 our @EXPORT = qw( parse_whois );
 
@@ -34,17 +34,19 @@ our %FIELD_NAME_CONV = (
     domainname    => 'domain',
     
     # creation_date
-    created       => 'creation_date',
-    created_on    => 'creation_date',
-    creation_date => 'creation_date',
+    created                  => 'creation_date',
+    created_on               => 'creation_date',
+    creation_date            => 'creation_date',
+    domain_registration_date => 'creation_date',
 
     #expiration_date
-    expire        => 'expiration_date',
-    expire_date   => 'expiration_date',
-    expires       => 'expiration_date',
-    expires_at    => 'expiration_date',
-    expires_on    => 'expiration_date',
-    expiry_date   => 'expiration_date',
+    expire                 => 'expiration_date',
+    expire_date            => 'expiration_date',
+    expires                => 'expiration_date',
+    expires_at             => 'expiration_date',
+    expires_on             => 'expiration_date',
+    expiry_date            => 'expiration_date',
+    domain_expiration_date => 'expiration_date',
 
 );
 
