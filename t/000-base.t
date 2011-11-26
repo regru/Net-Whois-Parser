@@ -27,7 +27,7 @@ ok !parse_whois(domain => 'iweufhweufhweufh.ru'), 'domain not exists';
 $info = parse_whois(raw => $raw, server => $server);
 is $info->{nameservers}->[0]->{domain}, 'ns1.reg.ru', 'reg.ru ns 1';
 is $info->{nameservers}->[1]->{domain}, 'ns2.reg.ru', 'reg.ru ns 2';
-is $info->{emails}->[0], 'info@reg.ru', 'reg.ru email';
+is $info->{domain}, 'REG.RU', 'reg.ru domain';
 
 $raw = "
     Test   1: test
