@@ -34,7 +34,7 @@ $raw = "
  Test-2:wefwef wef
   test3: value:value
 ";
-$info = parse_whois( raw => $raw );
+$info = parse_whois( raw => $raw, server => 'whois.ripn.net' );
 
 ok exists $info->{'test_1'}, 'field name with spaces';
 ok exists $info->{'test_2'}, 'field with -';
@@ -48,7 +48,7 @@ $raw = [
     { text => "tEst: 2" },
     { text => "test: 3" },
 ];
-$info = parse_whois( raw => $raw );
+$info = parse_whois( raw => $raw, server => 'whois.ripn.net' );
 
 is_deeply $info->{test}, [ 1, 2, 3], 'get_all_values is on';
 

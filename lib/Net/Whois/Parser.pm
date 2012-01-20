@@ -6,7 +6,7 @@ use utf8;
 use Net::Whois::Raw;
 use Data::Dumper;
 
-our $VERSION = '0.05';
+our $VERSION = '0.07';
 
 our @EXPORT = qw( parse_whois );
 
@@ -102,9 +102,8 @@ sub parse_whois {
             $args{server} || 
             Net::Whois::Raw::Common::get_server($args{domain}) ||
             'DEFAULT';
-        
+
         my $whois = ref $args{raw} ? $args{raw} : [ { text => $args{raw}, srv => $server } ];
-        
 
         return _process_parse($whois);
 
@@ -419,7 +418,7 @@ Net::Whois::Parser - module for parsing whois information
     $Net::Whois::Parser::FIELD_NAME_CONV{'Domain name'} = 'domain';
 
     # If you want to format some fields.
-    # I think it is very usefull for dates.
+    # I think it is very useful for dates.
     $Net::Whois::Parser::HOOKS{'expiration_date'} = [ \&format_date ];
     
 =head1 DESCRIPTION

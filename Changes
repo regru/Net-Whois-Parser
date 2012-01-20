@@ -1,3 +1,8 @@
+0.07    2012-01-20
+    Fixed spell bug ( Jotam Jr. Trejo )
+    Fixed warnings in tests
+0.06    2011-11-26
+    Fixed bug in tests
 0.05    2010-02-26
     Added aliases
 0.04    2010-02-10
