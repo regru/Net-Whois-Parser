@@ -33,12 +33,14 @@ $raw = "
     Test   1: test
  Test-2:wefwef wef
   test3: value:value
+  test4.....: value
 ";
 $info = parse_whois( raw => $raw, server => 'whois.ripn.net' );
 
 ok exists $info->{'test_1'}, 'field name with spaces';
 ok exists $info->{'test_2'}, 'field with -';
 is $info->{'test3'}, 'value:value', 'field value with :';
+is $info->{'test4'}, 'value', 'field value with :';
 
 ####
 $Net::Whois::Parser::GET_ALL_VALUES = 1;

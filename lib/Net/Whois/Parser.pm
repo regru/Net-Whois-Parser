@@ -21,13 +21,15 @@ our %PARSERS = (
 our %FIELD_NAME_CONV = (
 
     # nameservers
-    nserver       => 'nameservers',        
-    name_server   => 'nameservers',        
-    name_serever  => 'nameservers',
-    name_server   => 'nameservers',
-    nameserver    => 'nameservers',
-    dns1          => 'nameservers',
-    dns2          => 'nameservers',
+    nserver          => 'nameservers',        
+    name_server      => 'nameservers',        
+    name_serever     => 'nameservers',
+    name_server      => 'nameservers',
+    nameserver       => 'nameservers',
+    dns1             => 'nameservers',
+    dns2             => 'nameservers',
+    primary_server   => 'nameservers',
+    secondary_server => 'nameservers', 
 
     # domain
     domain_name   => 'domain',
@@ -38,6 +40,7 @@ our %FIELD_NAME_CONV = (
     created_on               => 'creation_date',
     creation_date            => 'creation_date',
     domain_registration_date => 'creation_date',
+    domain_created           => 'creation_date',
 
     #expiration_date
     expire                 => 'expiration_date',
@@ -150,6 +153,7 @@ sub _post_parse {
             # change keys to standard names
             my $new_key = lc $key;
             $new_key =~ s/\s+|\t+|-/_/g;
+            $new_key =~ s/\.+$//;
             if ( exists $FIELD_NAME_CONV{$new_key} ) {
                 $new_key =  $FIELD_NAME_CONV{$new_key};
             }
@@ -315,7 +319,7 @@ sub _default_parser {
         $line =~ s/^\s+//;
         $line =~ s/\s+$//;
 
-        my ( $key, $value ) = $line =~ /^\s*([\d\w\s_-]+):\s*(.+)$/;
+        my ( $key, $value ) = $line =~ /^\s*([\d\w\s._-]+):\s*(.+)$/;
         next if  !$line || !$value;
         $key =~ s/\s+$//;
         $value =~ s/\s+$//;

@@ -10,3 +10,4 @@ examples/key_count.pl
 examples/keys_by_whois.pl
 Makefile.PL
 META.yml
+META.json
