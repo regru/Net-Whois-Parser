@@ -13,6 +13,11 @@ my $builder = Module::Build->new(
     },
     add_to_cleanup      => [ 'Net-Whois-Parser-*' ],
     create_makefile_pl => 'traditional',
+    meta_merge => {
+        resources => {
+            repository  => 'https://github.com/regru/net-whois-parser'
+        },
+    }
 );
 
 $builder->create_build_script();
