@@ -13,7 +13,7 @@ $Net::Whois::Parser::DEBUG = 2;
 my $domain = 'reg.ru';
 my $info;
 
-plan tests => 11;
+plan tests => 12;
 
 my ( $raw, $server ) = whois($domain);
 
